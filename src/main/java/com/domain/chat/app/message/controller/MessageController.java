@@ -1,0 +1,41 @@
+package com.domain.chat.app.message.controller;
+
+import com.domain.chat.app.message.dto.MessageDto;
+import com.domain.chat.app.message.service.MessageService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/messages")
+public class MessageController {
+    private final MessageService service;
+
+    @GetMapping("/all")
+    public ResponseEntity<List<MessageDto>> findAll() {
+        return ResponseEntity.ok(service.findAll());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<MessageDto> findById(@PathVariable Long id) {
+        return ResponseEntity.ok(service.findById(id));
+    }
+
+    @PostMapping
+    public ResponseEntity<MessageDto> create(@RequestBody MessageDto dto) {
+        return ResponseEntity.ok(service.create(dto));
+    }
+
+    @PutMapping
+    public ResponseEntity<MessageDto> update(@RequestBody MessageDto dto) {
+        return ResponseEntity.ok(service.update(dto));
+    }
+
+    @DeleteMapping
+    public ResponseEntity<MessageDto> delete(@RequestBody MessageDto dto) {
+        return ResponseEntity.ok(service.delete(dto));
+    }
+}
