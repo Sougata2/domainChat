@@ -24,6 +24,11 @@ public class RoomController {
         return ResponseEntity.ok(service.findById(id));
     }
 
+    @GetMapping("/{reference-number/{number}")
+    public ResponseEntity<RoomDto> findByReferenceNumber(@PathVariable(value = "number") String referenceNumber) {
+        return ResponseEntity.ok(service.findByReferenceNumber(referenceNumber));
+    }
+
     @PostMapping
     public ResponseEntity<RoomDto> create(@RequestBody RoomDto dto) {
         return ResponseEntity.ok(service.create(dto));
