@@ -1,5 +1,6 @@
 package com.domain.chat.app.message.entity;
 
+import com.domain.chat.app.room.entity.RoomEntity;
 import com.domain.chat.app.user.entity.UserEntity;
 import com.domain.mapper.references.MasterEntity;
 import jakarta.persistence.*;
@@ -30,6 +31,10 @@ public class MessageEntity implements MasterEntity {
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE,  CascadeType.REFRESH,  CascadeType.DETACH})
     @JoinColumn(name = "user_id")
     private UserEntity sender;
+
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE,  CascadeType.REFRESH,  CascadeType.DETACH})
+    @JoinColumn(name = "room_id")
+    private RoomEntity room;
 
     @CreationTimestamp
     private LocalDateTime createdAt;

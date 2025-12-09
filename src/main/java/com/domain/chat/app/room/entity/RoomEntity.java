@@ -33,6 +33,9 @@ public class RoomEntity implements MasterEntity {
     @JoinTable(name = "room_user_map", joinColumns = @JoinColumn(name = "room_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
     private Set<UserEntity> participants;
 
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "room")
+    private Set<MessageEntity> messages;
+
     @CreationTimestamp
     private LocalDateTime createdAt;
 
