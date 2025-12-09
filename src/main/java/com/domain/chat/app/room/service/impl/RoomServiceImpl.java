@@ -1,5 +1,6 @@
 package com.domain.chat.app.room.service.impl;
 
+import com.domain.chat.app.message.dto.MessageDto;
 import com.domain.chat.app.room.dto.RoomDto;
 import com.domain.chat.app.room.entity.RoomEntity;
 import com.domain.chat.app.room.repository.RoomRepository;
@@ -102,6 +103,21 @@ public class RoomServiceImpl implements RoomService {
             repository.delete(entity.get());
 
             return dto;
+        } catch (EntityNotFoundException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public List<MessageDto> getMessages(String referenceNumber) {
+        try {
+            Optional<RoomEntity> room = repository.findByReferenceNumber(referenceNumber);
+            if (room.isEmpty()) {
+                throw new EntityNotFoundException("Room not found with reference number %s not found".formatted(referenceNumber));
+            }
+            return room.get().getMessages().stream().map(e -> (MessageDto) mapper.toDto(e)).toList();
         } catch (EntityNotFoundException e) {
             throw e;
         } catch (Exception e) {

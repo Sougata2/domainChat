@@ -1,5 +1,6 @@
 package com.domain.chat.app.room.service;
 
+import com.domain.chat.app.message.dto.MessageDto;
 import com.domain.chat.app.room.dto.RoomDto;
 
 import java.util.List;
@@ -16,4 +17,6 @@ public interface RoomService {
     RoomDto update(RoomDto dto);
 
     RoomDto delete(RoomDto dto);
+
+    List<MessageDto> getMessages(String referenceNumber);
 }

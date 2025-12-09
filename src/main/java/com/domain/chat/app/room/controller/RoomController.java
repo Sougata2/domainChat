@@ -1,5 +1,6 @@
 package com.domain.chat.app.room.controller;
 
+import com.domain.chat.app.message.dto.MessageDto;
 import com.domain.chat.app.room.dto.RoomDto;
 import com.domain.chat.app.room.service.RoomService;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,11 @@ public class RoomController {
     @GetMapping("/reference-number/{number}")
     public ResponseEntity<RoomDto> findByReferenceNumber(@PathVariable(value = "number") String referenceNumber) {
         return ResponseEntity.ok(service.findByReferenceNumber(referenceNumber));
+    }
+
+    @GetMapping("/messages/{number}")
+    public ResponseEntity<List<MessageDto>> getMessages(@PathVariable(value = "number") String referenceNumber) {
+        return ResponseEntity.ok(service.getMessages(referenceNumber));
     }
 
     @PostMapping
