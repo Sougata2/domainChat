@@ -14,4 +14,6 @@ public interface MessageService {
     MessageDto update(MessageDto dto);
 
     MessageDto delete(MessageDto dto);
+
+    MessageDto send(MessageDto dto);
 }

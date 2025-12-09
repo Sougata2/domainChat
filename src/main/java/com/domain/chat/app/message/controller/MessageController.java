@@ -24,6 +24,11 @@ public class MessageController {
         return ResponseEntity.ok(service.findById(id));
     }
 
+    @PostMapping("/send")
+    public ResponseEntity<MessageDto> send(@RequestBody MessageDto dto) {
+        return ResponseEntity.ok(service.send(dto));
+    }
+
     @PostMapping
     public ResponseEntity<MessageDto> create(@RequestBody MessageDto dto) {
         return ResponseEntity.ok(service.create(dto));
