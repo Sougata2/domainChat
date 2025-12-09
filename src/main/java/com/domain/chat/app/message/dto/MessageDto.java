@@ -1,7 +1,7 @@
 package com.domain.chat.app.message.dto;
 
+import com.domain.chat.app.room.dto.RoomDto;
 import com.domain.chat.app.user.dto.UserDto;
-import com.domain.chat.app.user.entity.UserEntity;
 import com.domain.mapper.references.MasterDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -22,6 +22,7 @@ public class MessageDto implements Serializable, MasterDto {
     private Long id;
     private String message;
     private UserDto sender;
+    private RoomDto room;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }
