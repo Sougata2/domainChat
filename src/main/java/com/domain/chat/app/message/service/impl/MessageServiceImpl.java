@@ -8,6 +8,7 @@ import com.domain.chat.app.room.entity.RoomEntity;
 import com.domain.chat.app.room.repository.RoomRepository;
 import com.domain.chat.app.user.entity.UserEntity;
 import com.domain.chat.app.user.repository.UserRepository;
+import com.domain.chat.component.emitter.EmitterRegistry;
 import com.domain.mapper.service.MapperService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class MessageServiceImpl implements MessageService {
+    private final EmitterRegistry emitterRegistry;
     private final UserRepository userRepository;
     private final RoomRepository roomRepository;
     private final MessageRepository repository;
@@ -120,7 +122,9 @@ public class MessageServiceImpl implements MessageService {
             message.setSender(sender.get());
             message.setRoom(room.get());
             MessageEntity saved = repository.save(message);
-            return (MessageDto) mapper.toDto(saved);
+            MessageDto outGoing = (MessageDto) mapper.toDto(saved);
+            emitterRegistry.broadcast(dto.getRoom().getReferenceNumber(), outGoing);
+            return outGoing;
         } catch (EntityNotFoundException e) {
             throw e;
         } catch (Exception e) {
