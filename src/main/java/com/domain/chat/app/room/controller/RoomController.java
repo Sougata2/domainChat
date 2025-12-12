@@ -4,8 +4,10 @@ import com.domain.chat.app.message.dto.MessageDto;
 import com.domain.chat.app.room.dto.RoomDto;
 import com.domain.chat.app.room.service.RoomService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.List;
 
@@ -33,6 +35,11 @@ public class RoomController {
     @GetMapping("/messages/{number}")
     public ResponseEntity<List<MessageDto>> getMessages(@PathVariable(value = "number") String referenceNumber) {
         return ResponseEntity.ok(service.getMessages(referenceNumber));
+    }
+
+    @GetMapping(value = "/messages/{number}/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public SseEmitter streamRoom(@PathVariable(value = "number") String referenceNumber) {
+        return service.streamRoom(referenceNumber);
     }
 
     @PostMapping
