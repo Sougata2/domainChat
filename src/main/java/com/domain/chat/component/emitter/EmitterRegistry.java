@@ -3,6 +3,7 @@ package com.domain.chat.component.emitter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -24,14 +25,18 @@ public class EmitterRegistry {
     public void broadcast(String roomRef, Object data) {
         List<SseEmitter> emitters = roomEmitters.get(roomRef);
         if (emitters == null) return;
+
+        List<SseEmitter> deadEmitters = new ArrayList<>();
+
         for (SseEmitter emitter : emitters) {
             try {
                 emitter.send(SseEmitter.event().data(data));
             } catch (Exception e) {
-                removeEmitter(roomRef, emitter);
-                throw new RuntimeException(e);
+                deadEmitters.add(emitter);
             }
         }
+
+        emitters.removeAll(deadEmitters);
     }
 
     public void removeEmitter(String roomRef, SseEmitter emitter) {
