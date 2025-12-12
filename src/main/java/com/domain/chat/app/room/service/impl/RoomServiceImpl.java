@@ -1,6 +1,7 @@
 package com.domain.chat.app.room.service.impl;
 
 import com.domain.chat.app.message.dto.MessageDto;
+import com.domain.chat.app.message.repository.MessageRepository;
 import com.domain.chat.app.room.dto.RoomDto;
 import com.domain.chat.app.room.entity.RoomEntity;
 import com.domain.chat.app.room.repository.RoomRepository;
@@ -24,6 +25,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class RoomServiceImpl implements RoomService {
+    private final MessageRepository messageRepository;
     private final EmitterRegistry emitterRegistry;
     private final UserRepository userRepository;
     private final RoomRepository repository;
@@ -154,9 +156,10 @@ public class RoomServiceImpl implements RoomService {
 
         SseEmitter emitter = emitterRegistry.addEmitter(referenceNumber);
         try {
-            List<MessageDto> oldMessages = room.get().getMessages()
-                    .stream().map(e -> (MessageDto) mapper.toDto(e)).toList();
-            emitter.send(SseEmitter.event().name("initial").data(oldMessages));
+            List<MessageDto> oldMessages = messageRepository.findByRoomReferenceNumber(referenceNumber)
+                    .stream()
+                    .map(e -> (MessageDto) mapper.toDto(e)).toList();
+            emitter.send(SseEmitter.event().name("history").data(oldMessages));
         } catch (Exception e) {
             emitter.completeWithError(e);
             throw new RuntimeException(e);
