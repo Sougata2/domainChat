@@ -2,6 +2,7 @@ package com.domain.chat.app.room.service;
 
 import com.domain.chat.app.message.dto.MessageDto;
 import com.domain.chat.app.room.dto.RoomDto;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.List;
 
@@ -19,4 +20,6 @@ public interface RoomService {
     RoomDto delete(RoomDto dto);
 
     List<MessageDto> getMessages(String referenceNumber);
+
+    SseEmitter streamRoom(String referenceNumber);
 }

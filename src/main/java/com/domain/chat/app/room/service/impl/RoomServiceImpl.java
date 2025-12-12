@@ -5,18 +5,27 @@ import com.domain.chat.app.room.dto.RoomDto;
 import com.domain.chat.app.room.entity.RoomEntity;
 import com.domain.chat.app.room.repository.RoomRepository;
 import com.domain.chat.app.room.service.RoomService;
+import com.domain.chat.app.user.entity.UserEntity;
+import com.domain.chat.app.user.repository.UserRepository;
+import com.domain.chat.component.emitter.EmitterRegistry;
 import com.domain.mapper.service.MapperService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authorization.AuthorizationDeniedException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class RoomServiceImpl implements RoomService {
+    private final EmitterRegistry emitterRegistry;
+    private final UserRepository userRepository;
     private final RoomRepository repository;
     private final MapperService mapper;
 
@@ -123,5 +132,35 @@ public class RoomServiceImpl implements RoomService {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public SseEmitter streamRoom(String referenceNumber) {
+        String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        Optional<UserEntity> user = userRepository.findByEmail(userEmail);
+        if (user.isEmpty()) {
+            throw new EntityNotFoundException("User with email %s not found".formatted(userEmail));
+        }
+
+        Optional<RoomEntity> room = repository.findByReferenceNumber(referenceNumber);
+        if (room.isEmpty()) {
+            throw new EntityNotFoundException("Room with reference number %s not found".formatted(referenceNumber));
+        }
+
+        boolean isParticipant = room.get().getParticipants().stream().anyMatch(u -> Objects.equals(u.getId(), user.get().getId()));
+        if (!isParticipant) {
+            throw new AuthorizationDeniedException("%s is not participant of this room".formatted(userEmail));
+        }
+
+        SseEmitter emitter = emitterRegistry.addEmitter(referenceNumber);
+        try {
+            List<MessageDto> oldMessages = room.get().getMessages()
+                    .stream().map(e -> (MessageDto) mapper.toDto(e)).toList();
+            emitter.send(SseEmitter.event().name("initial").data(oldMessages));
+        } catch (Exception e) {
+            emitter.completeWithError(e);
+            throw new RuntimeException(e);
+        }
+        return emitter;
     }
 }
