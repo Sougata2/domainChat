@@ -11,19 +11,19 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 @Component
 public class EmitterRegistry {
-    private final Map<String, List<SseEmitter>> roomEmitters = new ConcurrentHashMap<>();
+    private final Map<String, List<SseEmitter>> userEmitters = new ConcurrentHashMap<>();
 
-    public SseEmitter addEmitter(String roomRef) {
+    public SseEmitter addEmitter(String username) {
         SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
-        roomEmitters.computeIfAbsent(roomRef, id -> new CopyOnWriteArrayList<>()).add(emitter);
-        emitter.onCompletion(() -> removeEmitter(roomRef, emitter));
-        emitter.onTimeout(() -> removeEmitter(roomRef, emitter));
-        emitter.onError((e) -> removeEmitter(roomRef, emitter));
+        userEmitters.computeIfAbsent(username, u -> new CopyOnWriteArrayList<>()).add(emitter);
+        emitter.onCompletion(() -> removeEmitter(username, emitter));
+        emitter.onTimeout(() -> removeEmitter(username, emitter));
+        emitter.onError((e) -> removeEmitter(username, emitter));
         return emitter;
     }
 
-    public void broadcast(String roomRef, Object data) {
-        List<SseEmitter> emitters = roomEmitters.get(roomRef);
+    public void broadcast(String username, Object data) {
+        List<SseEmitter> emitters = userEmitters.get(username);
         if (emitters == null) return;
 
         List<SseEmitter> deadEmitters = new ArrayList<>();
@@ -39,8 +39,8 @@ public class EmitterRegistry {
         emitters.removeAll(deadEmitters);
     }
 
-    public void removeEmitter(String roomRef, SseEmitter emitter) {
-        List<SseEmitter> emitters = roomEmitters.get(roomRef);
+    public void removeEmitter(String username, SseEmitter emitter) {
+        List<SseEmitter> emitters = userEmitters.get(username);
         if (emitters == null) return;
         emitters.remove(emitter);
     }
