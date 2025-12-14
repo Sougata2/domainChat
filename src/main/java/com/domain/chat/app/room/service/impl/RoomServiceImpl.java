@@ -1,6 +1,7 @@
 package com.domain.chat.app.room.service.impl;
 
 import com.domain.chat.app.message.dto.MessageDto;
+import com.domain.chat.app.message.entity.MessageEntity;
 import com.domain.chat.app.message.repository.MessageRepository;
 import com.domain.chat.app.room.dto.RoomDto;
 import com.domain.chat.app.room.entity.RoomEntity;
@@ -128,7 +129,15 @@ public class RoomServiceImpl implements RoomService {
             if (room.isEmpty()) {
                 throw new EntityNotFoundException("Room not found with reference number %s not found".formatted(referenceNumber));
             }
-            return room.get().getMessages().stream().map(e -> (MessageDto) mapper.toDto(e)).toList();
+
+            String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+            boolean isParticipant = room.get().getParticipants().stream().anyMatch(u -> u.getEmail().equals(userEmail));
+            if (!isParticipant) {
+                throw new AuthorizationDeniedException("%s is not participant of this room".formatted(userEmail));
+            }
+
+            List<MessageEntity> messages = messageRepository.findByRoomReferenceNumberAsc(referenceNumber);
+            return messages.stream().map(e -> (MessageDto) mapper.toDto(e)).toList();
         } catch (EntityNotFoundException e) {
             throw e;
         } catch (Exception e) {
