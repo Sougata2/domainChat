@@ -37,6 +37,7 @@ public class RoomController {
         return ResponseEntity.ok(service.getMessages(referenceNumber));
     }
 
+    @Deprecated
     @GetMapping(value = "/messages/{number}/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter streamRoom(@PathVariable(value = "number") String referenceNumber) {
         return service.streamRoom(referenceNumber);

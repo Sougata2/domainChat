@@ -21,5 +21,6 @@ public interface RoomService {
 
     List<MessageDto> getMessages(String referenceNumber);
 
+    @Deprecated
     SseEmitter streamRoom(String referenceNumber);
 }

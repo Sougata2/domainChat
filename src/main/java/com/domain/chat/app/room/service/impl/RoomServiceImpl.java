@@ -137,6 +137,7 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
+    @Deprecated
     public SseEmitter streamRoom(String referenceNumber) {
         String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
         Optional<UserEntity> user = userRepository.findByEmail(userEmail);
