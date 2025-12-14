@@ -28,11 +28,11 @@ public class MessageEntity implements MasterEntity {
     @Column
     private String message;
 
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE,  CascadeType.REFRESH,  CascadeType.DETACH})
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     @JoinColumn(name = "user_id")
     private UserEntity sender;
 
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE,  CascadeType.REFRESH,  CascadeType.DETACH})
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     @JoinColumn(name = "room_id")
     private RoomEntity room;
 
