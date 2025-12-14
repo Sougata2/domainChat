@@ -123,7 +123,9 @@ public class MessageServiceImpl implements MessageService {
             message.setRoom(room.get());
             MessageEntity saved = repository.save(message);
             MessageDto outGoing = (MessageDto) mapper.toDto(saved);
-            emitterRegistry.broadcast(dto.getRoom().getReferenceNumber(), outGoing);
+            room.get().getParticipants().forEach(participant -> {
+                emitterRegistry.broadcast(participant.getEmail(), outGoing);
+            });
             return outGoing;
         } catch (EntityNotFoundException e) {
             throw e;
