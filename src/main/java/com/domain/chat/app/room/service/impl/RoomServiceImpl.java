@@ -146,6 +146,17 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
+    public List<RoomDto> getSubscribedRooms() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Optional<UserEntity> user = userRepository.findByEmail(username);
+        if (user.isEmpty()) {
+            throw new EntityNotFoundException("User not found with email %s not found".formatted(username));
+        }
+        List<RoomEntity> entities = repository.findByUserId(user.get().getId());
+        return entities.stream().map(e -> (RoomDto) mapper.toDto(e)).toList();
+    }
+
+    @Override
     @Deprecated
     public SseEmitter streamRoom(String referenceNumber) {
         String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
