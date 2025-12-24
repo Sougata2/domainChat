@@ -153,7 +153,7 @@ public class RoomServiceImpl implements RoomService {
             throw new EntityNotFoundException("User not found with email %s not found".formatted(username));
         }
         List<RoomEntity> entities = repository.findByUserId(user.get().getId());
-        return entities.stream().map(e -> (RoomDto) mapper.toDto(e)).toList();
+        return entities.stream().map(e -> (RoomDto) mapper.toDto(e, 2)).toList();
     }
 
     @Override
