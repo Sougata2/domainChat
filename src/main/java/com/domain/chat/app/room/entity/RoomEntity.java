@@ -34,6 +34,7 @@ public class RoomEntity implements MasterEntity {
     private Set<UserEntity> participants;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "room")
+    @OrderBy("createdAt desc")
     private Set<MessageEntity> messages;
 
     @CreationTimestamp
