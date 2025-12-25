@@ -140,7 +140,7 @@ public class RoomServiceImpl implements RoomService {
                 throw new AuthorizationDeniedException("%s is not participant of this room".formatted(userEmail));
             }
 
-            List<MessageEntity> messages = messageRepository.findByRoomReferenceNumberAsc(referenceNumber);
+            List<MessageEntity> messages = messageRepository.findByRoomReferenceNumberDesc(referenceNumber);
             return messages.stream().map(e -> (MessageDto) mapper.toDto(e)).toList();
         } catch (EntityNotFoundException e) {
             throw e;
