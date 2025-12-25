@@ -2,6 +2,7 @@ package com.domain.chat.app.room.service;
 
 import com.domain.chat.app.message.dto.MessageDto;
 import com.domain.chat.app.room.dto.RoomDto;
+import com.domain.chat.app.room.dto.RoomSummaryDto;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.List;
@@ -22,6 +23,8 @@ public interface RoomService {
     List<MessageDto> getMessages(String referenceNumber);
 
     List<RoomDto> getSubscribedRooms();
+
+    List<RoomSummaryDto> getSubscribedRoomsSummary();
 
     @Deprecated
     SseEmitter streamRoom(String referenceNumber);

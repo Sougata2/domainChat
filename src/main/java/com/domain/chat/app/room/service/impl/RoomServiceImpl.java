@@ -4,6 +4,7 @@ import com.domain.chat.app.message.dto.MessageDto;
 import com.domain.chat.app.message.entity.MessageEntity;
 import com.domain.chat.app.message.repository.MessageRepository;
 import com.domain.chat.app.room.dto.RoomDto;
+import com.domain.chat.app.room.dto.RoomSummaryDto;
 import com.domain.chat.app.room.entity.RoomEntity;
 import com.domain.chat.app.room.repository.RoomRepository;
 import com.domain.chat.app.room.service.RoomService;
@@ -11,7 +12,9 @@ import com.domain.chat.app.user.entity.UserEntity;
 import com.domain.chat.app.user.repository.UserRepository;
 import com.domain.chat.component.emitter.EmitterRegistry;
 import com.domain.mapper.service.MapperService;
+import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.TypedQuery;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -31,6 +34,7 @@ public class RoomServiceImpl implements RoomService {
     private final UserRepository userRepository;
     private final RoomRepository repository;
     private final MapperService mapper;
+    private final EntityManager em;
 
     @Override
     public List<RoomDto> findAll() {
@@ -154,6 +158,43 @@ public class RoomServiceImpl implements RoomService {
         }
         List<RoomEntity> entities = repository.findByUserId(user.get().getId());
         return entities.stream().map(e -> (RoomDto) mapper.toDto(e, 2)).toList();
+    }
+
+    @Override
+    public List<RoomSummaryDto> getSubscribedRoomsSummary() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Optional<UserEntity> user = userRepository.findByEmail(username);
+        if (user.isEmpty()) {
+            throw new EntityNotFoundException("User not found with email %s not found".formatted(username));
+        }
+        TypedQuery<RoomSummaryDto> query = em.createQuery("""
+                select new com.domain.chat.app.room.dto.RoomSummaryDto(
+                    r.id,
+                    r.referenceNumber,
+                    m.message,
+                    m.sender.email,
+                    op.firstName,
+                    op.lastName,
+                    m.createdAt,
+                    m.updatedAt
+                )
+                from RoomEntity r
+                join r.participants p
+                join r.participants op
+                left join r.messages m
+                where p.id = :userId
+                and op.id <> :userId
+                and (
+                    m.id is null or m.createdAt = (
+                        select max(m2.createdAt)
+                        from MessageEntity m2
+                        where m2.room = r
+                    )
+                )
+                order by m.createdAt desc
+                """, RoomSummaryDto.class);
+        query.setParameter("userId", user.get().getId());
+        return query.getResultList();
     }
 
     @Override
