@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Formula;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
@@ -35,6 +36,9 @@ public class MessageEntity implements MasterEntity {
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     @JoinColumn(name = "room_id")
     private RoomEntity room;
+
+    @Formula("(select e.email from users e where e.id = user_id)")
+    private String senderEmail;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
