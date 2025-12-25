@@ -21,4 +21,17 @@ public interface RoomRepository extends JpaRepository<RoomEntity, Long> {
             "    where p2.id = :userId" +
             ")")
     List<RoomEntity> findByUserId(Long userId);
+
+    @Query("select distinct e from RoomEntity e " +
+            "join fetch e.participants f " +
+            "left join fetch e.messages m " +
+            "where exists (" +
+            "    select 1 from e.participants p2 " +
+            "    where p2.id = :userId" +
+            ") " +
+            "and (m is null or m.createdAt = (" +
+            "    select max(m2.createdAt) from MessageEntity m2 " +
+            "    where m2.room.id = e.id" +
+            "))")
+    List<RoomEntity> findByUserIdWithLatestMessage(Long userId);
 }
