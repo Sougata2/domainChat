@@ -29,6 +29,9 @@ public class MessageEntity implements MasterEntity {
     @Column
     private String message;
 
+    @Column
+    private String uuid;
+
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     @JoinColumn(name = "user_id")
     private UserEntity sender;

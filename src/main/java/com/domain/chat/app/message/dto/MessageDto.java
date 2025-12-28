@@ -20,6 +20,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class MessageDto implements Serializable, MasterDto {
     private Long id;
+    private String uuid;
     private String message;
     private UserDto sender;
     private RoomDto room;
