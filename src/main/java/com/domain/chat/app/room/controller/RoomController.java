@@ -2,6 +2,7 @@ package com.domain.chat.app.room.controller;
 
 import com.domain.chat.app.message.dto.MessageDto;
 import com.domain.chat.app.room.dto.RoomDto;
+import com.domain.chat.app.room.dto.RoomOptDto;
 import com.domain.chat.app.room.dto.RoomSummaryDto;
 import com.domain.chat.app.room.service.RoomService;
 import lombok.RequiredArgsConstructor;
@@ -46,6 +47,11 @@ public class RoomController {
     @GetMapping("/subscribed-rooms-summary")
     public ResponseEntity<List<RoomSummaryDto>> getSubscribedRoomsSummary() {
         return ResponseEntity.ok(service.getSubscribedRoomsSummary());
+    }
+
+    @GetMapping("/opt-room/{number}")
+    public ResponseEntity<RoomOptDto> getRoomOpt(@PathVariable(value = "number") String referenceNumber) {
+        return ResponseEntity.ok(service.getRoomOpt(referenceNumber));
     }
 
     @Deprecated

@@ -14,4 +14,7 @@ public interface MessageRepository extends JpaRepository<MessageEntity, Long> {
 
     @Query("select e from MessageEntity e where e.room.referenceNumber = :referenceNumber order by e.createdAt desc")
     List<MessageEntity> findByRoomReferenceNumberDesc(String referenceNumber);
+
+    @Query("select e.uuid from MessageEntity e where e.room.referenceNumber = :referenceNumber order by e.createdAt desc")
+    List<String> findMessageUUIDsByRoomReference(String referenceNumber);
 }

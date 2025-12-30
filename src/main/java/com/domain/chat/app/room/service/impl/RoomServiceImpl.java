@@ -4,10 +4,12 @@ import com.domain.chat.app.message.dto.MessageDto;
 import com.domain.chat.app.message.entity.MessageEntity;
 import com.domain.chat.app.message.repository.MessageRepository;
 import com.domain.chat.app.room.dto.RoomDto;
+import com.domain.chat.app.room.dto.RoomOptDto;
 import com.domain.chat.app.room.dto.RoomSummaryDto;
 import com.domain.chat.app.room.entity.RoomEntity;
 import com.domain.chat.app.room.repository.RoomRepository;
 import com.domain.chat.app.room.service.RoomService;
+import com.domain.chat.app.user.dto.UserDto;
 import com.domain.chat.app.user.entity.UserEntity;
 import com.domain.chat.app.user.repository.UserRepository;
 import com.domain.chat.component.emitter.EmitterRegistry;
@@ -23,8 +25,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -227,5 +232,30 @@ public class RoomServiceImpl implements RoomService {
             throw new RuntimeException(e);
         }
         return emitter;
+    }
+
+    @Override
+    public RoomOptDto getRoomOpt(String referenceNumber) {
+        try {
+            RoomEntity room = repository.findByReferenceNumber(referenceNumber).orElseThrow(() -> new EntityNotFoundException("Room with reference number %s not found".formatted(referenceNumber)));
+            List<MessageEntity> messageEntities = messageRepository.findByRoomReferenceNumber(referenceNumber);
+            Map<String, MessageDto> messageDtos = messageEntities
+                    .stream()
+                    .map(e -> (MessageDto) mapper.toDto(e))
+                    .collect(Collectors.toMap(MessageDto::getUuid, Function.identity()));
+            List<String> uuids = messageRepository.findMessageUUIDsByRoomReference(referenceNumber);
+            List<UserDto> participants = room.getParticipants().stream().map(e -> (UserDto) mapper.toDto(e)).toList();
+            return RoomOptDto.builder()
+                    .id(room.getId())
+                    .referenceNumber(referenceNumber)
+                    .participants(participants)
+                    .uuids(uuids)
+                    .messages(messageDtos)
+                    .createdAt(room.getCreatedAt())
+                    .updatedAt(room.getUpdatedAt())
+                    .build();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }
