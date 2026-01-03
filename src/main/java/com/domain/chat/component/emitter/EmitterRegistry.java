@@ -14,8 +14,13 @@ public class EmitterRegistry {
     private final Map<String, List<SseEmitter>> userEmitters = new ConcurrentHashMap<>();
 
     public SseEmitter addEmitter(String username) {
-        SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
+        SseEmitter emitter = new SseEmitter(0L);
         userEmitters.computeIfAbsent(username, u -> new CopyOnWriteArrayList<>()).add(emitter);
+        try {
+            emitter.send(SseEmitter.event().name("INIT").data("connected"));
+        } catch (Exception e) {
+            removeEmitter(username, emitter);
+        }
         emitter.onCompletion(() -> removeEmitter(username, emitter));
         emitter.onTimeout(() -> removeEmitter(username, emitter));
         emitter.onError((e) -> removeEmitter(username, emitter));
