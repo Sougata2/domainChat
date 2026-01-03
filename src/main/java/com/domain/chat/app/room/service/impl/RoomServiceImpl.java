@@ -4,6 +4,7 @@ import com.domain.chat.app.message.dto.MessageDto;
 import com.domain.chat.app.message.entity.MessageEntity;
 import com.domain.chat.app.message.repository.MessageRepository;
 import com.domain.chat.app.room.dto.RoomDto;
+import com.domain.chat.app.room.dto.RoomListDto;
 import com.domain.chat.app.room.dto.RoomOptDto;
 import com.domain.chat.app.room.dto.RoomSummaryDto;
 import com.domain.chat.app.room.entity.RoomEntity;
@@ -155,14 +156,19 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
-    public List<RoomDto> getSubscribedRooms() {
+    public RoomListDto getSubscribedRooms() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         Optional<UserEntity> user = userRepository.findByEmail(username);
         if (user.isEmpty()) {
             throw new EntityNotFoundException("User not found with email %s not found".formatted(username));
         }
         List<RoomEntity> entities = repository.findByUserIdWithLatestMessage(user.get().getId());
-        return entities.stream().map(e -> (RoomDto) mapper.toDto(e)).toList();
+        Map<String, RoomDto> roomMap = entities.stream().map(e -> (RoomDto) mapper.toDto(e)).collect(Collectors.toMap(RoomDto::getReferenceNumber, Function.identity()));
+        List<String> references = repository.getSubscribedRoomsReference(user.get().getId());
+        return RoomListDto.builder()
+                .rooms(roomMap)
+                .references(references)
+                .build();
     }
 
     @Override

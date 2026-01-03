@@ -36,6 +36,9 @@ public class RoomEntity implements MasterEntity {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "room")
     private Set<MessageEntity> messages;
 
+    @Column
+    private LocalDateTime lastMessageSentAt;
+
     @CreationTimestamp
     private LocalDateTime createdAt;
 

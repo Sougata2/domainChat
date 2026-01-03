@@ -16,6 +16,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -121,6 +122,8 @@ public class MessageServiceImpl implements MessageService {
             MessageEntity message = (MessageEntity) mapper.toEntity(dto);
             message.setSender(sender.get());
             message.setRoom(room.get());
+            room.get().setLastMessageSentAt(LocalDateTime.now());
+            roomRepository.save(room.get());
             MessageEntity saved = repository.save(message);
             MessageDto outGoing = (MessageDto) mapper.toDto(saved);
             room.get().getParticipants().forEach(participant -> emitterRegistry.broadcast(participant.getEmail(), outGoing));

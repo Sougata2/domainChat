@@ -2,6 +2,7 @@ package com.domain.chat.app.room.controller;
 
 import com.domain.chat.app.message.dto.MessageDto;
 import com.domain.chat.app.room.dto.RoomDto;
+import com.domain.chat.app.room.dto.RoomListDto;
 import com.domain.chat.app.room.dto.RoomOptDto;
 import com.domain.chat.app.room.dto.RoomSummaryDto;
 import com.domain.chat.app.room.service.RoomService;
@@ -40,7 +41,7 @@ public class RoomController {
     }
 
     @GetMapping("/subscribed-rooms")
-    public ResponseEntity<List<RoomDto>> getSubscribedRooms() {
+    public ResponseEntity<RoomListDto> getSubscribedRooms() {
         return ResponseEntity.ok(service.getSubscribedRooms());
     }
 
