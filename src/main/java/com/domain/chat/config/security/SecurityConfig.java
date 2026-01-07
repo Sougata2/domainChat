@@ -14,7 +14,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, AuthFilter filter) throws Exception {
         http.authorizeHttpRequests(
-                        authorizeRequests -> authorizeRequests.anyRequest().hasRole("ADMIN"))
+                        authorizeRequests -> authorizeRequests.anyRequest().hasAnyRole("ADMIN", "CHAT_USER"))
                 .addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class)
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
