@@ -6,6 +6,7 @@ import com.domain.chat.app.message.repository.MessageRepository;
 import com.domain.chat.app.message.service.MessageService;
 import com.domain.chat.app.room.entity.RoomEntity;
 import com.domain.chat.app.room.repository.RoomRepository;
+import com.domain.chat.app.user.dto.UserDto;
 import com.domain.chat.app.user.entity.UserEntity;
 import com.domain.chat.app.user.repository.UserRepository;
 import com.domain.chat.component.emitter.EmitterRegistry;
@@ -17,8 +18,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -126,6 +129,16 @@ public class MessageServiceImpl implements MessageService {
             roomRepository.save(room.get());
             MessageEntity saved = repository.save(message);
             MessageDto outGoing = (MessageDto) mapper.toDto(saved);
+            Set<UserDto> participants = new LinkedHashSet<>();
+            for (UserEntity participant : room.get().getParticipants()) {
+                UserDto p = new UserDto();
+                p.setId(participant.getId());
+                p.setEmail(participant.getEmail());
+                p.setFirstName(participant.getFirstName());
+                p.setLastName(participant.getLastName());
+                participants.add(p);
+            }
+            outGoing.getRoom().setParticipants(participants);
             room.get().getParticipants().forEach(participant -> emitterRegistry.broadcast(participant.getEmail(), outGoing));
             return outGoing;
         } catch (EntityNotFoundException e) {
