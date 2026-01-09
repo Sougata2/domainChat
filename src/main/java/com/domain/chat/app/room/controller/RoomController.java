@@ -1,6 +1,7 @@
 package com.domain.chat.app.room.controller;
 
 import com.domain.chat.app.message.dto.MessageDto;
+import com.domain.chat.app.message.service.MessageService;
 import com.domain.chat.app.room.dto.RoomDto;
 import com.domain.chat.app.room.dto.RoomListDto;
 import com.domain.chat.app.room.dto.RoomOptDto;
@@ -19,6 +20,7 @@ import java.util.List;
 @RequestMapping("/rooms")
 public class RoomController {
     private final RoomService service;
+    private final MessageService messageService;
 
     @GetMapping("/all")
     public ResponseEntity<List<RoomDto>> findAll() {
@@ -59,6 +61,12 @@ public class RoomController {
     @GetMapping(value = "/messages/{number}/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter streamRoom(@PathVariable(value = "number") String referenceNumber) {
         return service.streamRoom(referenceNumber);
+    }
+
+    @PostMapping("/new-chat")
+    public ResponseEntity<MessageDto> newChat(@RequestBody RoomDto dto) {
+        MessageDto message = service.createPrivateRoom(dto);
+        return ResponseEntity.ok(messageService.send(message));
     }
 
     @PostMapping

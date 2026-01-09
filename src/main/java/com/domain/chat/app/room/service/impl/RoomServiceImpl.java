@@ -25,10 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -263,5 +260,21 @@ public class RoomServiceImpl implements RoomService {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    @Transactional
+    public MessageDto createPrivateRoom(RoomDto dto) {
+        RoomEntity newRoom = new RoomEntity();
+        newRoom.setReferenceNumber(dto.getReferenceNumber());
+        Set<UserEntity> participants = new LinkedHashSet<>();
+        for (UserDto user : dto.getParticipants()) {
+            UserEntity participant = userRepository.findByEmail(user.getEmail()).orElseThrow(() -> new EntityNotFoundException("User with email %s not found".formatted(user.getEmail())));
+            participants.add(participant);
+        }
+        newRoom.setParticipants(participants);
+
+        repository.save(newRoom);
+        return dto.getMessages().stream().toList().getFirst();
     }
 }

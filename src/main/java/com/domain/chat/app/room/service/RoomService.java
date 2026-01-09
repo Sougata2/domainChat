@@ -33,4 +33,5 @@ public interface RoomService {
 
     RoomOptDto getRoomOpt(String referenceNumber);
 
+    MessageDto createPrivateRoom(RoomDto dto);
 }
