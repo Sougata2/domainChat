@@ -28,6 +28,10 @@ public class EmitterRegistry {
     }
 
     public void broadcast(String username, Object data) {
+        broadcast(username, "MESSAGE", data);
+    }
+
+    public void broadcast(String username, String eventName, Object data) {
         List<SseEmitter> emitters = userEmitters.get(username);
         if (emitters == null) return;
 
@@ -35,7 +39,7 @@ public class EmitterRegistry {
 
         for (SseEmitter emitter : emitters) {
             try {
-                emitter.send(SseEmitter.event().data(data));
+                emitter.send(SseEmitter.event().name(eventName).data(data));
             } catch (Exception e) {
                 deadEmitters.add(emitter);
             }
