@@ -17,6 +17,7 @@ import java.util.Map;
 @AllArgsConstructor
 public class RoomOptDto {
     private Long id;
+    private String groupName;
     private String referenceNumber;
     private List<UserDto> participants;
     private List<String> uuids;

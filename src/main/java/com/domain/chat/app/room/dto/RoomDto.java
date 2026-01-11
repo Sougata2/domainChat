@@ -21,6 +21,7 @@ import java.util.Set;
 @AllArgsConstructor
 public class RoomDto implements Serializable, MasterDto {
     private Long id;
+    private String groupName;
     private String referenceNumber;
     private Set<UserDto> participants;
     private Set<MessageDto> messages;

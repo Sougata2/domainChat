@@ -29,6 +29,9 @@ public class RoomEntity implements MasterEntity {
     @Column
     private String referenceNumber;
 
+    @Column
+    private String groupName;
+
     @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinTable(name = "room_user_map", joinColumns = @JoinColumn(name = "room_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
     private Set<UserEntity> participants;
