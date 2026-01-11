@@ -69,6 +69,11 @@ public class RoomController {
         return ResponseEntity.ok(messageService.send(message));
     }
 
+    @PostMapping("/new-group")
+    public ResponseEntity<RoomDto> newGroup(@RequestBody RoomDto dto) {
+        return ResponseEntity.ok(service.createGroupRoom(dto));
+    }
+
     @PostMapping
     public ResponseEntity<RoomDto> create(@RequestBody RoomDto dto) {
         return ResponseEntity.ok(service.create(dto));

@@ -251,6 +251,7 @@ public class RoomServiceImpl implements RoomService {
             return RoomOptDto.builder()
                     .id(room.getId())
                     .referenceNumber(referenceNumber)
+                    .groupName(room.getGroupName())
                     .participants(participants)
                     .uuids(uuids)
                     .messages(messageDtos)
@@ -276,5 +277,23 @@ public class RoomServiceImpl implements RoomService {
 
         repository.save(newRoom);
         return dto.getMessages().stream().toList().getFirst();
+    }
+
+    @Override
+    public RoomDto createGroupRoom(RoomDto dto) {
+        RoomEntity newGroupRoom = (RoomEntity) mapper.toEntity(dto);
+        Set<UserEntity> participants = new LinkedHashSet<>();
+        for (UserDto user : dto.getParticipants()) {
+            UserEntity u = userRepository.findByEmail(user.getEmail()).orElseThrow(() -> new EntityNotFoundException("User with email %s not found".formatted(user.getEmail())));
+            participants.add(u);
+        }
+        newGroupRoom.setParticipants(participants);
+        RoomEntity saved = repository.save(newGroupRoom);
+
+        RoomDto roomDto = (RoomDto) mapper.toDto(saved);
+        for (UserEntity participant : participants) {
+            emitterRegistry.broadcast(participant.getEmail(), "ROOM", roomDto);
+        }
+        return roomDto;
     }
 }
