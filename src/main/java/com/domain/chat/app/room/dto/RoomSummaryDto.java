@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -13,7 +14,8 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class RoomSummaryDto {
     private Long id;
-    private String referenceNumber;
+    private String roomType;
+    private UUID referenceNumber;
     private String latestMessage;
     private String latestMessageSenderEmail;
     private String otherParticipantFirstName;

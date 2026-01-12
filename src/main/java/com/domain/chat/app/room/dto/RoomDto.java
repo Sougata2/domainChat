@@ -11,6 +11,7 @@ import lombok.Setter;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Set;
+import java.util.UUID;
 
 /**
  * DTO for {@link com.domain.chat.app.room.entity.RoomEntity}
@@ -22,7 +23,8 @@ import java.util.Set;
 public class RoomDto implements Serializable, MasterDto {
     private Long id;
     private String groupName;
-    private String referenceNumber;
+    private String roomType;
+    private UUID referenceNumber;
     private Set<UserDto> participants;
     private Set<MessageDto> messages;
     private LocalDateTime lastMessageSentAt;

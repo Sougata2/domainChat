@@ -7,12 +7,13 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class RoomListDto {
-    private List<String> references;
-    private Map<String, RoomDto> rooms;
+    private List<UUID> references;
+    private Map<UUID, RoomDto> rooms;
 }

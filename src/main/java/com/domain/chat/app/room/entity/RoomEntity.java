@@ -13,6 +13,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.Set;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -26,8 +27,11 @@ public class RoomEntity implements MasterEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, unique = true, updatable = false)
+    private UUID referenceNumber;
+
     @Column
-    private String referenceNumber;
+    private String roomType;
 
     @Column
     private String groupName;
@@ -47,4 +51,11 @@ public class RoomEntity implements MasterEntity {
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+
+    @PrePersist
+    protected void onCreate() {
+        if (referenceNumber == null) {
+            referenceNumber = UUID.randomUUID();
+        }
+    }
 }
