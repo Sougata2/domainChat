@@ -5,16 +5,16 @@ import com.domain.chat.app.room.dto.RoomDto;
 import com.domain.chat.app.room.dto.RoomListDto;
 import com.domain.chat.app.room.dto.RoomOptDto;
 import com.domain.chat.app.room.dto.RoomSummaryDto;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface RoomService {
     List<RoomDto> findAll();
 
     RoomDto findById(Long id);
 
-    RoomDto findByReferenceNumber(String referenceNumber);
+    RoomDto findByReferenceNumber(UUID referenceNumber);
 
     RoomDto create(RoomDto dto);
 
@@ -22,16 +22,15 @@ public interface RoomService {
 
     RoomDto delete(RoomDto dto);
 
-    List<MessageDto> getMessages(String referenceNumber);
+    List<MessageDto> getMessages(UUID referenceNumber);
 
     RoomListDto getSubscribedRooms();
 
     List<RoomSummaryDto> getSubscribedRoomsSummary();
 
-    @Deprecated
-    SseEmitter streamRoom(String referenceNumber);
+    RoomOptDto getRoomOpt(UUID referenceNumber);
 
-    RoomOptDto getRoomOpt(String referenceNumber);
+    RoomOptDto findRoomOpt(String participantEmail);
 
     MessageDto createPrivateRoom(RoomDto dto);
 
