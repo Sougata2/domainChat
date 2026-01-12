@@ -7,11 +7,13 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 
 @Repository
 public interface RoomRepository extends JpaRepository<RoomEntity, Long> {
     @Query("select e from RoomEntity e where e.referenceNumber = :referenceNumber")
-    Optional<RoomEntity> findByReferenceNumber(String referenceNumber);
+    Optional<RoomEntity> findByReferenceNumber(UUID referenceNumber);
 
     @Query("select e from RoomEntity e " +
             "join fetch e.participants f " +
@@ -21,6 +23,17 @@ public interface RoomRepository extends JpaRepository<RoomEntity, Long> {
             "    where p2.id = :userId" +
             ")")
     List<RoomEntity> findByUserId(Long userId);
+
+    @Query("""
+            select re
+            from RoomEntity re
+            join re.participants p
+            where re.roomType = :roomType
+              and p.id in (:participants)
+            group by re.id
+            having count(distinct p.id) = 2
+            """)
+    Optional<RoomEntity> findRoomOpt(Set<Long> participants, String roomType);
 
     @Query("select distinct e from RoomEntity e " +
             "join fetch e.participants f " +
@@ -42,5 +55,5 @@ public interface RoomRepository extends JpaRepository<RoomEntity, Long> {
             where p.id = :userId
             order by e.lastMessageSentAt desc
             """)
-    List<String> getSubscribedRoomsReference(Long userId);
+    List<UUID> getSubscribedRoomsReference(Long userId);
 }
