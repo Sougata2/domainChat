@@ -8,12 +8,11 @@ import com.domain.chat.app.room.dto.RoomOptDto;
 import com.domain.chat.app.room.dto.RoomSummaryDto;
 import com.domain.chat.app.room.service.RoomService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -33,12 +32,12 @@ public class RoomController {
     }
 
     @GetMapping("/reference-number/{number}")
-    public ResponseEntity<RoomDto> findByReferenceNumber(@PathVariable(value = "number") String referenceNumber) {
+    public ResponseEntity<RoomDto> findByReferenceNumber(@PathVariable(value = "number") UUID referenceNumber) {
         return ResponseEntity.ok(service.findByReferenceNumber(referenceNumber));
     }
 
     @GetMapping("/messages/{number}")
-    public ResponseEntity<List<MessageDto>> getMessages(@PathVariable(value = "number") String referenceNumber) {
+    public ResponseEntity<List<MessageDto>> getMessages(@PathVariable(value = "number") UUID referenceNumber) {
         return ResponseEntity.ok(service.getMessages(referenceNumber));
     }
 
@@ -53,14 +52,13 @@ public class RoomController {
     }
 
     @GetMapping("/opt-room/{number}")
-    public ResponseEntity<RoomOptDto> getRoomOpt(@PathVariable(value = "number") String referenceNumber) {
+    public ResponseEntity<RoomOptDto> getRoomOpt(@PathVariable(value = "number") UUID referenceNumber) {
         return ResponseEntity.ok(service.getRoomOpt(referenceNumber));
     }
 
-    @Deprecated
-    @GetMapping(value = "/messages/{number}/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public SseEmitter streamRoom(@PathVariable(value = "number") String referenceNumber) {
-        return service.streamRoom(referenceNumber);
+    @GetMapping("/find-and-get-room-opt/{participant}")
+    public ResponseEntity<RoomOptDto> findAndGetRoomOpt(@PathVariable(value = "participant") String participantEmail) {
+        return ResponseEntity.ok(service.findRoomOpt(participantEmail));
     }
 
     @PostMapping("/new-chat")
