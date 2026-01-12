@@ -6,15 +6,16 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.UUID;
 
 @Repository
 public interface MessageRepository extends JpaRepository<MessageEntity, Long> {
     @Query("select e from MessageEntity e where e.room.referenceNumber = :referenceNumber order by e.createdAt desc")
-    List<MessageEntity> findByRoomReferenceNumber(String referenceNumber);
+    List<MessageEntity> findByRoomReferenceNumber(UUID referenceNumber);
 
     @Query("select e from MessageEntity e where e.room.referenceNumber = :referenceNumber order by e.createdAt desc")
-    List<MessageEntity> findByRoomReferenceNumberDesc(String referenceNumber);
+    List<MessageEntity> findByRoomReferenceNumberDesc(UUID referenceNumber);
 
     @Query("select e.uuid from MessageEntity e where e.room.referenceNumber = :referenceNumber order by e.createdAt desc")
-    List<String> findMessageUUIDsByRoomReference(String referenceNumber);
+    List<String> findMessageUUIDsByRoomReference(UUID referenceNumber);
 }
