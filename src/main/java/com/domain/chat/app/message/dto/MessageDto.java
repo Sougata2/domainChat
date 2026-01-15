@@ -27,4 +27,6 @@ public class MessageDto implements Serializable, MasterDto {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private String senderEmail;
+    private String senderFirstName;
+    private String senderLastName;
 }

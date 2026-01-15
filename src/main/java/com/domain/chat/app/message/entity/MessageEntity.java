@@ -43,6 +43,12 @@ public class MessageEntity implements MasterEntity {
     @Formula("(select e.email from users e where e.id = user_id)")
     private String senderEmail;
 
+    @Formula("(select e.first_name from users e where e.id = user_id)")
+    private String senderFirstName;
+
+    @Formula("(select e.last_name from users e where e.id = user_id)")
+    private String senderLastName;
+    
     @CreationTimestamp
     private LocalDateTime createdAt;
 
