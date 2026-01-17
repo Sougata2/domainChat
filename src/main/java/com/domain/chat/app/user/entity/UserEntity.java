@@ -52,7 +52,7 @@ public class UserEntity implements MasterEntity {
     @JoinColumn(name = "default_role_id")
     private RoleEntity defaultRole;
 
-    @OneToMany(cascade = CascadeType.ALL,mappedBy = "sender")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "sender")
     private Set<MessageEntity> messages;
 
     @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
