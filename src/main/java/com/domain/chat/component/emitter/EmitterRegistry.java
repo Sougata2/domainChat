@@ -1,5 +1,6 @@
 package com.domain.chat.component.emitter;
 
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -52,5 +53,26 @@ public class EmitterRegistry {
         List<SseEmitter> emitters = userEmitters.get(username);
         if (emitters == null) return;
         emitters.remove(emitter);
+    }
+
+    @Scheduled(fixedRate = 15000)
+    public void heartbeat() {
+        userEmitters.forEach((username, emitters) -> {
+            List<SseEmitter> deadEmitters = new ArrayList<>();
+            for (SseEmitter emitter : emitters) {
+                try {
+                    emitter.send(
+                            SseEmitter.event().name("HEARTBEAT").data("ping")
+                    );
+                } catch (Exception e) {
+                    deadEmitters.add(emitter);
+                }
+            }
+            emitters.removeAll(deadEmitters);
+
+            if (emitters.isEmpty()) {
+                userEmitters.remove(username);
+            }
+        });
     }
 }
