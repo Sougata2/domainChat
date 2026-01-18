@@ -4,6 +4,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -16,15 +17,20 @@ public class EmitterRegistry {
 
     public SseEmitter addEmitter(String username) {
         SseEmitter emitter = new SseEmitter(0L);
-        userEmitters.computeIfAbsent(username, u -> new CopyOnWriteArrayList<>()).add(emitter);
-        try {
-            emitter.send(SseEmitter.event().name("INIT").data("connected"));
-        } catch (Exception e) {
-            removeEmitter(username, emitter);
-        }
+
         emitter.onCompletion(() -> removeEmitter(username, emitter));
         emitter.onTimeout(() -> removeEmitter(username, emitter));
-        emitter.onError((e) -> removeEmitter(username, emitter));
+        emitter.onError(e -> removeEmitter(username, emitter));
+
+        userEmitters
+                .computeIfAbsent(username, u -> new CopyOnWriteArrayList<>())
+                .add(emitter);
+
+        try {
+            emitter.send(SseEmitter.event().name("INIT").data("connected"));
+        } catch (IOException e) {
+            removeEmitter(username, emitter);
+        }
         return emitter;
     }
 
@@ -41,7 +47,7 @@ public class EmitterRegistry {
         for (SseEmitter emitter : emitters) {
             try {
                 emitter.send(SseEmitter.event().name(eventName).data(data));
-            } catch (Exception e) {
+            } catch (IOException e) {
                 deadEmitters.add(emitter);
             }
         }
@@ -64,7 +70,7 @@ public class EmitterRegistry {
                     emitter.send(
                             SseEmitter.event().name("HEARTBEAT").data("ping")
                     );
-                } catch (Exception e) {
+                } catch (IOException e) {
                     deadEmitters.add(emitter);
                 }
             }
