@@ -2,6 +2,7 @@ package com.domain.chat.app.user.entity;
 
 
 import com.domain.chat.app.message.entity.MessageEntity;
+import com.domain.chat.app.pushNotification.entity.PushNotificationEntity;
 import com.domain.chat.app.role.entity.RoleEntity;
 import com.domain.chat.app.room.entity.RoomEntity;
 import com.domain.mapper.references.MasterEntity;
@@ -58,6 +59,9 @@ public class UserEntity implements MasterEntity {
     @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinTable(name = "room_user_map", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "room_id"))
     private Set<RoomEntity> rooms;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
+    private Set<PushNotificationEntity> pushNotifications;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
