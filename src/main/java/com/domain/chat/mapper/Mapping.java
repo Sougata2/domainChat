@@ -2,6 +2,8 @@ package com.domain.chat.mapper;
 
 import com.domain.chat.app.message.dto.MessageDto;
 import com.domain.chat.app.message.entity.MessageEntity;
+import com.domain.chat.app.pushNotification.dto.PushNotificationDto;
+import com.domain.chat.app.pushNotification.entity.PushNotificationEntity;
 import com.domain.chat.app.role.dto.RoleDto;
 import com.domain.chat.app.role.entity.RoleEntity;
 import com.domain.chat.app.room.dto.RoomDto;
@@ -22,7 +24,8 @@ public class Mapping implements com.domain.mapper.mapping.Mapping {
                 Map.entry(UserEntity.class, UserDto.class),
                 Map.entry(RoleEntity.class, RoleDto.class),
                 Map.entry(MessageEntity.class, MessageDto.class),
-                Map.entry(RoomEntity.class, RoomDto.class)
+                Map.entry(RoomEntity.class, RoomDto.class),
+                Map.entry(PushNotificationEntity.class, PushNotificationDto.class)
         );
     }
 
@@ -32,7 +35,8 @@ public class Mapping implements com.domain.mapper.mapping.Mapping {
                 Map.entry(UserDto.class, UserEntity.class),
                 Map.entry(RoleDto.class, RoleEntity.class),
                 Map.entry(MessageDto.class, MessageEntity.class),
-                Map.entry(RoomDto.class, RoomEntity.class)
+                Map.entry(RoomDto.class, RoomEntity.class),
+                Map.entry(PushNotificationDto.class, PushNotificationEntity.class)
         );
     }
 }
