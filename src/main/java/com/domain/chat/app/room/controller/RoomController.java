@@ -64,7 +64,7 @@ public class RoomController {
     @PostMapping("/new-chat")
     public ResponseEntity<MessageDto> newChat(@RequestBody RoomDto dto) {
         MessageDto message = service.createPrivateRoom(dto);
-        return ResponseEntity.ok(messageService.send(message));
+        return ResponseEntity.ok(messageService.send(message, "NEW_CHAT"));
     }
 
     @PostMapping("/new-group")
