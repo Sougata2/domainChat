@@ -15,6 +15,7 @@ import nl.martijndwars.webpush.Subscription;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -26,6 +27,7 @@ public class PushNotificationServiceImpl implements PushNotificationService {
     private final PushNotificationProperties properties;
 
     @Override
+    @Transactional
     public void subscribe(PushSubscriptionDto dto) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         UserEntity user = userRepository.findByEmail(username)
