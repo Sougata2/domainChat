@@ -1,6 +1,7 @@
 package com.domain.chat.config.security;
 
 import com.domain.authcommon.filter.AuthFilter;
+import jakarta.servlet.DispatcherType;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -14,7 +15,9 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, AuthFilter filter) throws Exception {
         http.authorizeHttpRequests(
-                        authorizeRequests -> authorizeRequests.anyRequest().hasAnyRole("ADMIN", "CHAT_USER"))
+                        authorizeRequests -> authorizeRequests
+                                .dispatcherTypeMatchers(DispatcherType.ASYNC, DispatcherType.ERROR).permitAll()
+                                .anyRequest().hasAnyRole("ADMIN", "CHAT_USER"))
                 .addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class)
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
