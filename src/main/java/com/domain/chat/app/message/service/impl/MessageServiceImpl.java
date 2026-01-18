@@ -4,6 +4,7 @@ import com.domain.chat.app.message.dto.MessageDto;
 import com.domain.chat.app.message.entity.MessageEntity;
 import com.domain.chat.app.message.repository.MessageRepository;
 import com.domain.chat.app.message.service.MessageService;
+import com.domain.chat.app.pushNotification.service.PushNotificationService;
 import com.domain.chat.app.room.entity.RoomEntity;
 import com.domain.chat.app.room.repository.RoomRepository;
 import com.domain.chat.app.user.dto.UserDto;
@@ -26,6 +27,7 @@ import java.util.Set;
 @Service
 @RequiredArgsConstructor
 public class MessageServiceImpl implements MessageService {
+    private final PushNotificationService pushNotificationService;
     private final EmitterRegistry emitterRegistry;
     private final UserRepository userRepository;
     private final RoomRepository roomRepository;
@@ -129,6 +131,8 @@ public class MessageServiceImpl implements MessageService {
             roomRepository.save(room.get());
             MessageEntity saved = repository.save(message);
             MessageDto outGoing = (MessageDto) mapper.toDto(saved);
+            if (outGoing.getSenderFirstName() == null) outGoing.setSenderFirstName(sender.get().getFirstName());
+            if (outGoing.getSenderLastName() == null) outGoing.setSenderLastName(sender.get().getLastName());
             Set<UserDto> participants = new LinkedHashSet<>();
             for (UserEntity participant : room.get().getParticipants()) {
                 UserDto p = new UserDto();
@@ -139,7 +143,16 @@ public class MessageServiceImpl implements MessageService {
                 participants.add(p);
             }
             outGoing.getRoom().setParticipants(participants);
-            room.get().getParticipants().forEach(participant -> emitterRegistry.broadcast(participant.getEmail(), outGoing));
+            room.get().getParticipants().forEach(participant -> {
+                emitterRegistry.broadcast(participant.getEmail(), outGoing);
+                if (!participant.getId().equals(sender.get().getId())) {
+                    pushNotificationService.notifyUser(
+                            participant,
+                            outGoing.getSenderFirstName() + " " + outGoing.getSenderLastName(),
+                            outGoing.getMessage()
+                    );
+                }
+            });
             return outGoing;
         } catch (EntityNotFoundException e) {
             throw e;
