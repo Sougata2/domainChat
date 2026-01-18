@@ -108,10 +108,16 @@ public class MessageServiceImpl implements MessageService {
             throw new RuntimeException(e);
         }
     }
-
+    
     @Override
     @Transactional
     public MessageDto send(MessageDto dto) {
+        return send(dto, "MESSAGE");
+    }
+
+    @Override
+    @Transactional
+    public MessageDto send(MessageDto dto, String eventType) {
         try {
             String email = SecurityContextHolder.getContext().getAuthentication().getName();
             Optional<UserEntity> sender = userRepository.findByEmail(email);
@@ -144,7 +150,7 @@ public class MessageServiceImpl implements MessageService {
             }
             outGoing.getRoom().setParticipants(participants);
             room.get().getParticipants().forEach(participant -> {
-                emitterRegistry.broadcast(participant.getEmail(), outGoing);
+                emitterRegistry.broadcast(participant.getEmail(), eventType, outGoing);
                 if (!participant.getId().equals(sender.get().getId())) {
                     pushNotificationService.notifyUser(
                             participant,

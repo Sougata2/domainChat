@@ -16,4 +16,6 @@ public interface MessageService {
     MessageDto delete(MessageDto dto);
 
     MessageDto send(MessageDto dto);
+
+    MessageDto send(MessageDto dto, String eventType);
 }
