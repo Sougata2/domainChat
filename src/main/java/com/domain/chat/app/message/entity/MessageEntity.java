@@ -1,5 +1,6 @@
 package com.domain.chat.app.message.entity;
 
+import com.domain.chat.app.file.entity.FileEntity;
 import com.domain.chat.app.room.entity.RoomEntity;
 import com.domain.chat.app.user.entity.UserEntity;
 import com.domain.mapper.references.MasterEntity;
@@ -40,6 +41,9 @@ public class MessageEntity implements MasterEntity {
     @JoinColumn(name = "room_id")
     private RoomEntity room;
 
+    @OneToOne(mappedBy = "message", orphanRemoval = true, cascade = CascadeType.ALL)
+    private FileEntity file;
+
     @Formula("(select e.email from users e where e.id = user_id)")
     private String senderEmail;
 
@@ -48,7 +52,7 @@ public class MessageEntity implements MasterEntity {
 
     @Formula("(select e.last_name from users e where e.id = user_id)")
     private String senderLastName;
-    
+
     @CreationTimestamp
     private LocalDateTime createdAt;
 

@@ -1,5 +1,6 @@
 package com.domain.chat.app.message.dto;
 
+import com.domain.chat.app.file.dto.FileDto;
 import com.domain.chat.app.room.dto.RoomDto;
 import com.domain.chat.app.user.dto.UserDto;
 import com.domain.mapper.references.MasterDto;
@@ -24,6 +25,7 @@ public class MessageDto implements Serializable, MasterDto {
     private String message;
     private UserDto sender;
     private RoomDto room;
+    private FileDto file;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private String senderEmail;
