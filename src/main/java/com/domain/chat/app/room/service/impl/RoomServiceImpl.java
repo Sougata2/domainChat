@@ -280,6 +280,7 @@ public class RoomServiceImpl implements RoomService {
                 .id(room.getId())
                 .referenceNumber(room.getReferenceNumber())
                 .groupName(room.getGroupName())
+                .roomType(room.getRoomType())
                 .participants(participants)
                 .uuids(uuids)
                 .messages(messageDtos)
