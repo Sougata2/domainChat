@@ -27,7 +27,7 @@ public class MessageEntity implements MasterEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
+    @Column(columnDefinition = "TEXT")
     private String message;
 
     @Column
