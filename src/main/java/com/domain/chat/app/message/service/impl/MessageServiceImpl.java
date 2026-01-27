@@ -4,7 +4,6 @@ import com.domain.chat.app.message.dto.MessageDto;
 import com.domain.chat.app.message.entity.MessageEntity;
 import com.domain.chat.app.message.repository.MessageRepository;
 import com.domain.chat.app.message.service.MessageService;
-import com.domain.chat.app.pushNotification.service.PushNotificationService;
 import com.domain.chat.app.room.entity.RoomEntity;
 import com.domain.chat.app.room.repository.RoomRepository;
 import com.domain.chat.app.user.dto.UserDto;
@@ -27,7 +26,6 @@ import java.util.Set;
 @Service
 @RequiredArgsConstructor
 public class MessageServiceImpl implements MessageService {
-    private final PushNotificationService pushNotificationService;
     private final EmitterRegistry emitterRegistry;
     private final UserRepository userRepository;
     private final RoomRepository roomRepository;
@@ -108,7 +106,7 @@ public class MessageServiceImpl implements MessageService {
             throw new RuntimeException(e);
         }
     }
-    
+
     @Override
     @Transactional
     public MessageDto send(MessageDto dto) {
@@ -151,13 +149,6 @@ public class MessageServiceImpl implements MessageService {
             outGoing.getRoom().setParticipants(participants);
             room.get().getParticipants().forEach(participant -> {
                 emitterRegistry.broadcast(participant.getEmail(), eventType, outGoing);
-                if (!participant.getId().equals(sender.get().getId())) {
-                    pushNotificationService.notifyUser(
-                            participant,
-                            outGoing.getSenderFirstName() + " " + outGoing.getSenderLastName(),
-                            outGoing.getMessage()
-                    );
-                }
             });
             return outGoing;
         } catch (EntityNotFoundException e) {
