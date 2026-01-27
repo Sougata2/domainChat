@@ -1,6 +1,7 @@
 package com.domain.chat.app.message.entity;
 
 import com.domain.chat.app.file.entity.FileEntity;
+import com.domain.chat.app.message.listener.MessageListener;
 import com.domain.chat.app.room.entity.RoomEntity;
 import com.domain.chat.app.user.entity.UserEntity;
 import com.domain.mapper.references.MasterEntity;
@@ -21,6 +22,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "messages")
+@EntityListeners(MessageListener.class)
 public class MessageEntity implements MasterEntity {
     @Id
     @Column
