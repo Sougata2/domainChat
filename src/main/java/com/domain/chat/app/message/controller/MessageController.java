@@ -3,8 +3,10 @@ package com.domain.chat.app.message.controller;
 import com.domain.chat.app.message.dto.MessageDto;
 import com.domain.chat.app.message.service.MessageService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -27,6 +29,14 @@ public class MessageController {
     @PostMapping("/send")
     public ResponseEntity<MessageDto> send(@RequestBody MessageDto dto) {
         return ResponseEntity.ok(service.send(dto));
+    }
+
+    @PostMapping(value = "/send/file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<MessageDto> sendFile(
+            @RequestPart(value = "message") MessageDto message,
+            @RequestPart(value = "file") MultipartFile file
+    ) {
+        return ResponseEntity.ok(service.sendFile(message, file));
     }
 
     @PostMapping

@@ -1,5 +1,6 @@
 package com.domain.chat.app.message.service.impl;
 
+import com.domain.chat.app.file.service.FileService;
 import com.domain.chat.app.message.dto.MessageDto;
 import com.domain.chat.app.message.entity.MessageEntity;
 import com.domain.chat.app.message.repository.MessageRepository;
@@ -16,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.LinkedHashSet;
@@ -30,6 +32,7 @@ public class MessageServiceImpl implements MessageService {
     private final UserRepository userRepository;
     private final RoomRepository roomRepository;
     private final MessageRepository repository;
+    private final FileService fileService;
     private final MapperService mapper;
 
     @Override
@@ -156,5 +159,25 @@ public class MessageServiceImpl implements MessageService {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    @Transactional
+    public MessageDto sendFile(MessageDto dto, MultipartFile file) {
+        MessageDto message = send(dto, "MEDIA");
+
+        if (file != null) {
+            MessageEntity messageEntity = repository.findById(message.getId())
+                    .orElseThrow(
+                            () -> new EntityNotFoundException("Message with id %d not found".formatted(message.getId()))
+                    );
+            fileService.upload(file, messageEntity);
+        }
+
+        MessageEntity finalMessage = repository.findById(message.getId())
+                .orElseThrow(
+                        () -> new EntityNotFoundException("Message with id %d not found".formatted(message.getId()))
+                );
+        return (MessageDto) mapper.toDto(finalMessage);
     }
 }
