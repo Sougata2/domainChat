@@ -7,7 +7,6 @@ import com.domain.chat.app.message.repository.MessageRepository;
 import com.domain.chat.app.message.service.MessageService;
 import com.domain.chat.app.room.entity.RoomEntity;
 import com.domain.chat.app.room.repository.RoomRepository;
-import com.domain.chat.app.user.dto.UserDto;
 import com.domain.chat.app.user.entity.UserEntity;
 import com.domain.chat.app.user.repository.UserRepository;
 import com.domain.chat.component.emitter.EmitterRegistry;
@@ -20,10 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -135,25 +132,71 @@ public class MessageServiceImpl implements MessageService {
             message.setSender(sender.get());
             message.setRoom(room.get());
             room.get().setLastMessageSentAt(LocalDateTime.now());
+            message.setEventType(eventType);
             roomRepository.save(room.get());
             MessageEntity saved = repository.save(message);
-            MessageDto outGoing = (MessageDto) mapper.toDto(saved);
-            if (outGoing.getSenderFirstName() == null) outGoing.setSenderFirstName(sender.get().getFirstName());
-            if (outGoing.getSenderLastName() == null) outGoing.setSenderLastName(sender.get().getLastName());
-            Set<UserDto> participants = new LinkedHashSet<>();
-            for (UserEntity participant : room.get().getParticipants()) {
-                UserDto p = new UserDto();
-                p.setId(participant.getId());
-                p.setEmail(participant.getEmail());
-                p.setFirstName(participant.getFirstName());
-                p.setLastName(participant.getLastName());
-                participants.add(p);
+            return (MessageDto) mapper.toDto(saved);
+//            if (outGoing.getSenderFirstName() == null) outGoing.setSenderFirstName(sender.get().getFirstName());
+//            if (outGoing.getSenderLastName() == null) outGoing.setSenderLastName(sender.get().getLastName());
+//            Set<UserDto> participants = new LinkedHashSet<>();
+//            for (UserEntity participant : room.get().getParticipants()) {
+//                UserDto p = new UserDto();
+//                p.setId(participant.getId());
+//                p.setEmail(participant.getEmail());
+//                p.setFirstName(participant.getFirstName());
+//                p.setLastName(participant.getLastName());
+//                participants.add(p);
+//            }
+//            outGoing.getRoom().setParticipants(participants);
+//            room.get().getParticipants().forEach(participant -> {
+//                emitterRegistry.broadcast(participant.getEmail(), eventType, outGoing);
+//            });
+//            return outGoing;
+        } catch (EntityNotFoundException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    @Transactional
+    public MessageEntity sendAndReturnEntity(MessageDto dto, String eventType) {
+        try {
+            String email = SecurityContextHolder.getContext().getAuthentication().getName();
+            Optional<UserEntity> sender = userRepository.findByEmail(email);
+            if (sender.isEmpty()) {
+                throw new EntityNotFoundException("Sender with id %d not found".formatted(dto.getSender().getId()));
             }
-            outGoing.getRoom().setParticipants(participants);
-            room.get().getParticipants().forEach(participant -> {
-                emitterRegistry.broadcast(participant.getEmail(), eventType, outGoing);
-            });
-            return outGoing;
+
+            Optional<RoomEntity> room = roomRepository.findByReferenceNumber(dto.getRoom().getReferenceNumber());
+            if (room.isEmpty()) {
+                throw new EntityNotFoundException("Room with reference number %s not found".formatted(dto.getRoom().getReferenceNumber()));
+            }
+
+            MessageEntity message = (MessageEntity) mapper.toEntity(dto);
+            message.setSender(sender.get());
+            message.setRoom(room.get());
+            room.get().setLastMessageSentAt(LocalDateTime.now());
+            message.setEventType(eventType);
+            roomRepository.save(room.get());
+            return repository.save(message);
+//            if (outGoing.getSenderFirstName() == null) outGoing.setSenderFirstName(sender.get().getFirstName());
+//            if (outGoing.getSenderLastName() == null) outGoing.setSenderLastName(sender.get().getLastName());
+//            Set<UserDto> participants = new LinkedHashSet<>();
+//            for (UserEntity participant : room.get().getParticipants()) {
+//                UserDto p = new UserDto();
+//                p.setId(participant.getId());
+//                p.setEmail(participant.getEmail());
+//                p.setFirstName(participant.getFirstName());
+//                p.setLastName(participant.getLastName());
+//                participants.add(p);
+//            }
+//            outGoing.getRoom().setParticipants(participants);
+//            room.get().getParticipants().forEach(participant -> {
+//                emitterRegistry.broadcast(participant.getEmail(), eventType, outGoing);
+//            });
+//            return outGoing;
         } catch (EntityNotFoundException e) {
             throw e;
         } catch (Exception e) {
