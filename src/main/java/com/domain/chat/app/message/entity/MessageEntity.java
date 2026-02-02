@@ -55,6 +55,9 @@ public class MessageEntity implements MasterEntity {
     @Formula("(select e.last_name from users e where e.id = user_id)")
     private String senderLastName;
 
+    @Transient
+    private String eventType;
+
     @CreationTimestamp
     private LocalDateTime createdAt;
 

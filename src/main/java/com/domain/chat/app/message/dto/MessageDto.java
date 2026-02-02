@@ -31,4 +31,5 @@ public class MessageDto implements Serializable, MasterDto {
     private String senderEmail;
     private String senderFirstName;
     private String senderLastName;
+    private String eventType;
 }
