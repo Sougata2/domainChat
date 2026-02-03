@@ -1,5 +1,6 @@
 package com.domain.chat.app.media.entity;
 
+import com.domain.chat.app.media.enums.MediaStatus;
 import com.domain.chat.app.message.entity.MessageEntity;
 import com.domain.mapper.references.MasterEntity;
 import jakarta.persistence.*;
@@ -37,6 +38,10 @@ public class MediaEntity implements MasterEntity {
 
     @Column
     private String mimeType;
+
+    @Column
+    @Enumerated(EnumType.STRING)
+    private MediaStatus status;
 
     @CreationTimestamp
     private Instant createdAt;

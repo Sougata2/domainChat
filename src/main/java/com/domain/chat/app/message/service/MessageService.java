@@ -20,8 +20,8 @@ public interface MessageService {
     MessageDto send(MessageDto dto);
 
     MessageDto send(MessageDto dto, String eventType);
-
-    MessageEntity sendAndReturnEntity(MessageDto dto, String eventType);
+    
+    MessageEntity prepareMessageEntity(MessageDto dto, String eventType);
 
     MessageDto sendFile(MessageDto dto, MultipartFile file);
 }

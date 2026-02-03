@@ -9,7 +9,6 @@ import com.domain.chat.app.room.entity.RoomEntity;
 import com.domain.chat.app.room.repository.RoomRepository;
 import com.domain.chat.app.user.entity.UserEntity;
 import com.domain.chat.app.user.repository.UserRepository;
-import com.domain.chat.component.emitter.EmitterRegistry;
 import com.domain.mapper.service.MapperService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +24,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class MessageServiceImpl implements MessageService {
-    private final EmitterRegistry emitterRegistry;
+    //    private final EmitterRegistry emitterRegistry;
     private final UserRepository userRepository;
     private final RoomRepository roomRepository;
     private final MessageRepository repository;
@@ -117,41 +116,27 @@ public class MessageServiceImpl implements MessageService {
     @Transactional
     public MessageDto send(MessageDto dto, String eventType) {
         try {
-            String email = SecurityContextHolder.getContext().getAuthentication().getName();
-            Optional<UserEntity> sender = userRepository.findByEmail(email);
-            if (sender.isEmpty()) {
-                throw new EntityNotFoundException("Sender with id %d not found".formatted(dto.getSender().getId()));
-            }
-
-            Optional<RoomEntity> room = roomRepository.findByReferenceNumber(dto.getRoom().getReferenceNumber());
-            if (room.isEmpty()) {
-                throw new EntityNotFoundException("Room with reference number %s not found".formatted(dto.getRoom().getReferenceNumber()));
-            }
-
-            MessageEntity message = (MessageEntity) mapper.toEntity(dto);
-            message.setSender(sender.get());
-            message.setRoom(room.get());
-            room.get().setLastMessageSentAt(LocalDateTime.now());
-            message.setEventType(eventType);
-            roomRepository.save(room.get());
-            MessageEntity saved = repository.save(message);
+            MessageEntity prepared = prepareMessageEntity(dto, eventType);
+            MessageEntity saved = repository.save(prepared);
             return (MessageDto) mapper.toDto(saved);
-//            if (outGoing.getSenderFirstName() == null) outGoing.setSenderFirstName(sender.get().getFirstName());
-//            if (outGoing.getSenderLastName() == null) outGoing.setSenderLastName(sender.get().getLastName());
-//            Set<UserDto> participants = new LinkedHashSet<>();
-//            for (UserEntity participant : room.get().getParticipants()) {
-//                UserDto p = new UserDto();
-//                p.setId(participant.getId());
-//                p.setEmail(participant.getEmail());
-//                p.setFirstName(participant.getFirstName());
-//                p.setLastName(participant.getLastName());
-//                participants.add(p);
-//            }
-//            outGoing.getRoom().setParticipants(participants);
-//            room.get().getParticipants().forEach(participant -> {
-//                emitterRegistry.broadcast(participant.getEmail(), eventType, outGoing);
-//            });
-//            return outGoing;
+/*
+            if (outGoing.getSenderFirstName() == null) outGoing.setSenderFirstName(sender.get().getFirstName());
+            if (outGoing.getSenderLastName() == null) outGoing.setSenderLastName(sender.get().getLastName());
+            Set<UserDto> participants = new LinkedHashSet<>();
+            for (UserEntity participant : room.get().getParticipants()) {
+                UserDto p = new UserDto();
+                p.setId(participant.getId());
+                p.setEmail(participant.getEmail());
+                p.setFirstName(participant.getFirstName());
+                p.setLastName(participant.getLastName());
+                participants.add(p);
+            }
+            outGoing.getRoom().setParticipants(participants);
+            room.get().getParticipants().forEach(participant -> {
+                emitterRegistry.broadcast(participant.getEmail(), eventType, outGoing);
+            });
+            return outGoing;
+*/
         } catch (EntityNotFoundException e) {
             throw e;
         } catch (Exception e) {
@@ -160,8 +145,7 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    @Transactional
-    public MessageEntity sendAndReturnEntity(MessageDto dto, String eventType) {
+    public MessageEntity prepareMessageEntity(MessageDto dto, String eventType) {
         try {
             String email = SecurityContextHolder.getContext().getAuthentication().getName();
             Optional<UserEntity> sender = userRepository.findByEmail(email);
@@ -180,23 +164,7 @@ public class MessageServiceImpl implements MessageService {
             room.get().setLastMessageSentAt(LocalDateTime.now());
             message.setEventType(eventType);
             roomRepository.save(room.get());
-            return repository.save(message);
-//            if (outGoing.getSenderFirstName() == null) outGoing.setSenderFirstName(sender.get().getFirstName());
-//            if (outGoing.getSenderLastName() == null) outGoing.setSenderLastName(sender.get().getLastName());
-//            Set<UserDto> participants = new LinkedHashSet<>();
-//            for (UserEntity participant : room.get().getParticipants()) {
-//                UserDto p = new UserDto();
-//                p.setId(participant.getId());
-//                p.setEmail(participant.getEmail());
-//                p.setFirstName(participant.getFirstName());
-//                p.setLastName(participant.getLastName());
-//                participants.add(p);
-//            }
-//            outGoing.getRoom().setParticipants(participants);
-//            room.get().getParticipants().forEach(participant -> {
-//                emitterRegistry.broadcast(participant.getEmail(), eventType, outGoing);
-//            });
-//            return outGoing;
+            return message;
         } catch (EntityNotFoundException e) {
             throw e;
         } catch (Exception e) {

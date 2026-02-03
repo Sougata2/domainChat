@@ -1,6 +1,7 @@
 package com.domain.chat.app.message.dto;
 
 import com.domain.chat.app.file.dto.FileDto;
+import com.domain.chat.app.media.dto.MediaDto;
 import com.domain.chat.app.room.dto.RoomDto;
 import com.domain.chat.app.user.dto.UserDto;
 import com.domain.mapper.references.MasterDto;
@@ -11,6 +12,7 @@ import lombok.Setter;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Set;
 
 /**
  * DTO for {@link com.domain.chat.app.message.entity.MessageEntity}
@@ -26,6 +28,7 @@ public class MessageDto implements Serializable, MasterDto {
     private UserDto sender;
     private RoomDto room;
     private FileDto file;
+    private Set<MediaDto> media;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private String senderEmail;

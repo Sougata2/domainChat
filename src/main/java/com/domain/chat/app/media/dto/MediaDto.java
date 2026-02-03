@@ -1,5 +1,6 @@
 package com.domain.chat.app.media.dto;
 
+import com.domain.chat.app.media.enums.MediaStatus;
 import com.domain.chat.app.message.dto.MessageDto;
 import com.domain.mapper.references.MasterDto;
 import lombok.AllArgsConstructor;
@@ -22,6 +23,7 @@ public class MediaDto implements Serializable, MasterDto {
     private String url;
     private String originalName;
     private Long size;
+    private MediaStatus status;
     private MessageDto message;
     private String mimeType;
     private Instant createdAt;

@@ -1,6 +1,7 @@
 package com.domain.chat.app.message.entity;
 
 import com.domain.chat.app.file.entity.FileEntity;
+import com.domain.chat.app.media.entity.MediaEntity;
 import com.domain.chat.app.message.listener.MessageListener;
 import com.domain.chat.app.room.entity.RoomEntity;
 import com.domain.chat.app.user.entity.UserEntity;
@@ -15,6 +16,7 @@ import org.hibernate.annotations.Formula;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -45,6 +47,9 @@ public class MessageEntity implements MasterEntity {
 
     @OneToOne(mappedBy = "message", orphanRemoval = true, cascade = CascadeType.ALL)
     private FileEntity file;
+
+    @OneToMany(orphanRemoval = true, mappedBy = "message", cascade = CascadeType.ALL)
+    private Set<MediaEntity> media;
 
     @Formula("(select e.email from users e where e.id = user_id)")
     private String senderEmail;
