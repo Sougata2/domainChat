@@ -71,6 +71,8 @@ public class MediaServiceImpl implements MediaService {
     @Transactional
     public MessageDto send(MessageDto dto) {
         MessageEntity message = messageService.prepareMessageEntity(dto, "MEDIA");
+        // remove the detached entity(media)
+        message.setMedia(null);
         MessageEntity saved = messageRepository.save(message);
         Set<MediaEntity> mediaList = new LinkedHashSet<>();
         for (MediaDto media : dto.getMedia()) {
@@ -80,7 +82,8 @@ public class MediaServiceImpl implements MediaService {
             mediaEntity.setMessage(saved);
             mediaList.add(mediaEntity);
         }
-        repository.saveAll(mediaList);
+        List<MediaEntity> attachedMedia = repository.saveAll(mediaList);
+        saved.setMedia(new LinkedHashSet<>(attachedMedia));
         return (MessageDto) mapper.toDto(saved);
     }
 

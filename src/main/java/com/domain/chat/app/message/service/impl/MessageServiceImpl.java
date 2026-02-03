@@ -161,8 +161,8 @@ public class MessageServiceImpl implements MessageService {
             MessageEntity message = (MessageEntity) mapper.toEntity(dto);
             message.setSender(sender.get());
             message.setRoom(room.get());
-            room.get().setLastMessageSentAt(LocalDateTime.now());
             message.setEventType(eventType);
+            room.get().setLastMessageSentAt(LocalDateTime.now());
             roomRepository.save(room.get());
             return message;
         } catch (EntityNotFoundException e) {
