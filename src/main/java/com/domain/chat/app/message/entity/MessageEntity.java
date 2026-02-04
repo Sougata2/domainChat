@@ -60,6 +60,9 @@ public class MessageEntity implements MasterEntity {
     @Formula("(select e.last_name from users e where e.id = user_id)")
     private String senderLastName;
 
+    @Column
+    private String type;
+
     @Transient
     private String eventType;
 

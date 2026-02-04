@@ -27,6 +27,7 @@ public class MessageDto implements Serializable, MasterDto {
     private String message;
     private UserDto sender;
     private RoomDto room;
+    private String type;
     private FileDto file;
     private Set<MediaDto> media;
     private LocalDateTime createdAt;
