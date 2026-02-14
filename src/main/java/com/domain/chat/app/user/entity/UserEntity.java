@@ -63,11 +63,17 @@ public class UserEntity implements MasterEntity {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
     private Set<PushNotificationEntity> pushNotifications;
 
+    @Column
+    private LocalDateTime lastSeen;
+
     @CreationTimestamp
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+
+    @Transient
+    private Boolean isOnline;
 
     @PrePersist
     protected void onCreate() {

@@ -1,5 +1,6 @@
 package com.domain.chat.app.user.controller;
 
+import com.domain.chat.app.user.dto.PresenceDto;
 import com.domain.chat.app.user.dto.UserDto;
 import com.domain.chat.app.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,11 @@ public class UserController {
     @GetMapping("/contacts")
     public ResponseEntity<List<UserDto>> getContacts() {
         return ResponseEntity.ok(service.getContacts());
+    }
+
+    @GetMapping("/presence")
+    public ResponseEntity<List<PresenceDto>> getPresence() {
+        return ResponseEntity.ok(service.getPresence());
     }
 
     @GetMapping(value = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
