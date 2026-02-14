@@ -13,7 +13,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -45,7 +44,6 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new EntityNotFoundException("User %s is not found".formatted(username)));
         return repository.findAllExceptLoggedInUser(user.getEmail()).stream().map((e) -> {
             boolean isOnline = false;
-            LocalDateTime lastSeen = LocalDateTime.now();
             if (emitterRegistry.getUsers().containsKey(e.getEmail())) {
                 isOnline = emitterRegistry.getUsers().get(e.getEmail()).isOnline();
             }
