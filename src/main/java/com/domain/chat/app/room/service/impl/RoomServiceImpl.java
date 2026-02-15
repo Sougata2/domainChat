@@ -268,6 +268,35 @@ public class RoomServiceImpl implements RoomService {
         return roomDto;
     }
 
+    @Override
+    @Transactional
+    public RoomDto muteUser(UUID roomReferenceNumber) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        RoomEntity roomEntity = repository.findByReferenceNumber(roomReferenceNumber)
+                .orElseThrow(() -> new EntityNotFoundException("Room %s is not found".formatted(roomReferenceNumber)));
+
+        UserEntity userEntity = userRepository.findByEmail(username)
+                .orElseThrow(() -> new EntityNotFoundException("User %s is not found".formatted(username)));
+
+        roomEntity.getMutedParticipants().add(userEntity);
+        RoomEntity saved = repository.save(roomEntity);
+        return (RoomDto) mapper.toDto(saved);
+    }
+
+    @Override
+    @Transactional
+    public RoomDto unMuteUser(UUID roomReferenceNumber) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        RoomEntity roomEntity = repository.findByReferenceNumber(roomReferenceNumber)
+                .orElseThrow(() -> new EntityNotFoundException("Room %s is not found".formatted(roomReferenceNumber)));
+
+        UserEntity userEntity = userRepository.findByEmail(username)
+                .orElseThrow(() -> new EntityNotFoundException("User %s is not found".formatted(username)));
+        roomEntity.getMutedParticipants().remove(userEntity);
+        RoomEntity saved = repository.save(roomEntity);
+        return (RoomDto) mapper.toDto(saved);
+    }
+
     private RoomOptDto convertRoomToRoomOpt(RoomEntity room) {
         List<MessageEntity> messageEntities = messageRepository.findByRoomReferenceNumber(room.getReferenceNumber());
         Map<String, MessageDto> messageDtos = messageEntities
@@ -276,6 +305,7 @@ public class RoomServiceImpl implements RoomService {
                 .collect(Collectors.toMap(MessageDto::getUuid, Function.identity()));
         List<String> uuids = messageRepository.findMessageUUIDsByRoomReference(room.getReferenceNumber());
         List<UserDto> participants = room.getParticipants().stream().map(e -> (UserDto) mapper.toDto(e)).toList();
+        List<String> mutedParticipants = room.getMutedParticipants().stream().map(UserEntity::getEmail).toList();
         return RoomOptDto.builder()
                 .id(room.getId())
                 .referenceNumber(room.getReferenceNumber())
@@ -284,6 +314,7 @@ public class RoomServiceImpl implements RoomService {
                 .participants(participants)
                 .uuids(uuids)
                 .messages(messageDtos)
+                .mutedParticipants(mutedParticipants)
                 .createdAt(room.getCreatedAt())
                 .updatedAt(room.getUpdatedAt())
                 .build();

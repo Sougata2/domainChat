@@ -61,6 +61,16 @@ public class RoomController {
         return ResponseEntity.ok(service.findRoomOpt(participantEmail));
     }
 
+    @PostMapping("/mute-room/{room}")
+    public ResponseEntity<RoomDto> mute(@PathVariable(value = "room") UUID roomReferenceNumber) {
+        return ResponseEntity.ok(service.muteUser(roomReferenceNumber));
+    }
+
+    @PostMapping("/unmute-room/{room}")
+    public ResponseEntity<RoomDto> unmute(@PathVariable(value = "room") UUID roomReferenceNumber) {
+        return ResponseEntity.ok(service.unMuteUser(roomReferenceNumber));
+    }
+
     @PostMapping("/new-chat")
     public ResponseEntity<MessageDto> newChat(@RequestBody RoomDto dto) {
         MessageDto message = service.createPrivateRoom(dto);

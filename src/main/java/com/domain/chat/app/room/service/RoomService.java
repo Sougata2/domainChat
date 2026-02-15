@@ -35,4 +35,8 @@ public interface RoomService {
     MessageDto createPrivateRoom(RoomDto dto);
 
     RoomDto createGroupRoom(RoomDto dto);
+
+    RoomDto muteUser(UUID roomReferenceNumber);
+
+    RoomDto unMuteUser(UUID roomReferenceNumber);
 }
