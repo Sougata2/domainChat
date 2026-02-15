@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "push_notifications", uniqueConstraints = @UniqueConstraint(columnNames = "endpoint"))
+@Table(name = "push_notifications")
 public class PushNotificationEntity implements MasterEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

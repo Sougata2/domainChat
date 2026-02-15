@@ -33,7 +33,7 @@ public class PushNotificationServiceImpl implements PushNotificationService {
         UserEntity user = userRepository.findByEmail(username)
                 .orElseThrow(() -> new EntityNotFoundException("User %s is not found".formatted(username)));
 
-        repository.findByEndPoint(dto.getEndpoint())
+        repository.findByEndPointAndUserId(dto.getEndpoint(), user.getId())
                 .ifPresentOrElse((existing) -> {
                     // already subscribed to push notification
                 }, () -> {
