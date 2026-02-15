@@ -47,8 +47,10 @@ public class MessageEventHandler {
             emitterRegistry.broadcast(participant.getEmail(), message.getEventType(), outGoing);
         });
 
+        Set<UserEntity> muted = message.getRoom().getMutedParticipants();
+
         message.getRoom().getParticipants().forEach(participant -> {
-            if (!participant.getId().equals(message.getSender().getId())) {
+            if (!participant.getId().equals(message.getSender().getId()) && !muted.contains(participant)) {
                 if (message.getRoom().getRoomType().equals("GROUP")) {
                     String messageBody = "%s : %s".formatted(message.getSender().getFirstName(), message.getMessage());
                     pushNotificationService.notifyUser(
