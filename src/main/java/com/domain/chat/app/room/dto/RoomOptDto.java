@@ -23,6 +23,7 @@ public class RoomOptDto {
     private UUID referenceNumber;
     private List<UserDto> participants;
     private List<String> uuids;
+    private List<String> mutedParticipants;
     private Map<String, MessageDto> messages;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

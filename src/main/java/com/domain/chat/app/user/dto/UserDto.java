@@ -32,6 +32,7 @@ public class UserDto implements Serializable, MasterDto {
     private RoleDto defaultRole;
     private Set<MessageDto> messages;
     private Set<RoomDto> rooms;
+    private Set<RoomDto> mutedRooms;
     private LocalDateTime lastSeen;
     private Boolean isOnline;
     private LocalDateTime createdAt;

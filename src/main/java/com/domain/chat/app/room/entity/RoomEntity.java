@@ -43,6 +43,10 @@ public class RoomEntity implements MasterEntity {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "room")
     private Set<MessageEntity> messages;
 
+    @ManyToMany
+    @JoinTable(name = "muted_rooms", joinColumns = @JoinColumn(name = "room_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
+    private Set<UserEntity> mutedParticipants;
+
     @Column
     private LocalDateTime lastMessageSentAt;
 

@@ -63,6 +63,10 @@ public class UserEntity implements MasterEntity {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
     private Set<PushNotificationEntity> pushNotifications;
 
+    @ManyToMany
+    @JoinTable(name = "muted_rooms", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "room_id"))
+    private Set<RoomEntity> mutedRooms;
+
     @Column
     private LocalDateTime lastSeen;
 

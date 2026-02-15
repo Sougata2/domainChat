@@ -27,6 +27,7 @@ public class RoomDto implements Serializable, MasterDto {
     private UUID referenceNumber;
     private Set<UserDto> participants;
     private Set<MessageDto> messages;
+    private Set<UserDto> mutedParticipants;
     private LocalDateTime lastMessageSentAt;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
