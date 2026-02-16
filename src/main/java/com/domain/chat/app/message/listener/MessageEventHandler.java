@@ -2,6 +2,7 @@ package com.domain.chat.app.message.listener;
 
 import com.domain.chat.app.message.dto.MessageDto;
 import com.domain.chat.app.message.entity.MessageEntity;
+import com.domain.chat.app.presence.service.PresenceService;
 import com.domain.chat.app.pushNotification.service.PushNotificationService;
 import com.domain.chat.app.room.entity.RoomEntity;
 import com.domain.chat.app.user.dto.UserDto;
@@ -21,6 +22,7 @@ import java.util.Set;
 public class MessageEventHandler {
     private final PushNotificationService pushNotificationService;
     private final EmitterRegistry emitterRegistry;
+    private final PresenceService presenceService;
     private final MapperService mapper;
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
@@ -50,7 +52,10 @@ public class MessageEventHandler {
         Set<UserEntity> muted = message.getRoom().getMutedParticipants();
 
         message.getRoom().getParticipants().forEach(participant -> {
-            if (!participant.getId().equals(message.getSender().getId()) && !muted.contains(participant)) {
+            boolean isSender = participant.getId().equals(message.getSender().getId());
+            boolean isMuted = muted.contains(participant);
+            boolean isActive = presenceService.getActiveUsers(participant.getId());
+            if (!isSender && !isMuted && !isActive) {
                 if (message.getRoom().getRoomType().equals("GROUP")) {
                     String messageBody = "%s : %s".formatted(message.getSender().getFirstName(), message.getMessage());
                     pushNotificationService.notifyUser(
