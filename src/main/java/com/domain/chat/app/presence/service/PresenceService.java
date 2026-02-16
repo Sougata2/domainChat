@@ -4,4 +4,8 @@ import java.time.LocalDateTime;
 
 public interface PresenceService {
     void updatePresence(LocalDateTime lastSeen, String username);
+
+    void updateVisibility(Boolean active);
+
+    Boolean getActiveUsers(Long userId);
 }
